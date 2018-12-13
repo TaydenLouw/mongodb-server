@@ -10,12 +10,20 @@ MongoClient.connect('mongodb://Localhost:27017',{useNewUrlParser: true},(err,db)
     }
     console.log('Connected to MongoDB server')
 
-    db.db('TodoApp').collection('Users').deleteMany({name: "Tayden"}).then((result) => {
-        console.log(JSON.stringify(result,undefined,2));
-    })
 
-    db.db('TodoApp').collection('Users').findOneAndDelete({name: "Test"}).then((result) => {
+    db.db('TodoApp').collection('Users').findOneAndUpdate({name: "Tayden"},{
+        $set: {
+        name: "Hayley",
+        location: "Uitenhage"
+    },
+    $inc: {
+        age: 1
+    }
+        
+    },{returnOriginal: false}).then((result) => {
         console.log(JSON.stringify(result,undefined,2));
+    }).catch((err) => {
+        console.log(err);
     })
 
     db.close();
