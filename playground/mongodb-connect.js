@@ -10,23 +10,13 @@ MongoClient.connect('mongodb://Localhost:27017',{useNewUrlParser: true},(err,db)
     }
     console.log('Connected to MongoDB server')
 
-    // db.db('TodoApp').collection('Users').insertOne({
-    //     name: "Tayden",
-    //     age: 24,
-    //     location: "Cape Town"
-    // }, (err,result)=>{
-    //     if(err) {
-    //         return console.log('Unable to insert into MongoDB collection.', err)
-    //     }
+    db.db('TodoApp').collection('Users').deleteMany({name: "Tayden"}).then((result) => {
+        console.log(JSON.stringify(result,undefined,2));
+    })
 
-    //     console.log(JSON.stringify(result.ops[0]._id.getTimestamp(),undefined,2));
-    // });
- 
-    db.db('TodoApp').collection('Todos').find().count().then((result)=>{
-        console.log(`Todos count: ${result}`);
-    },(err) => {
-        console.log('Unable to fetch Todos' + err);
-    });
+    db.db('TodoApp').collection('Users').findOneAndDelete({name: "Test"}).then((result) => {
+        console.log(JSON.stringify(result,undefined,2));
+    })
 
     db.close();
 });
