@@ -114,3 +114,76 @@ describe('GET /todos/:id', () => {
         .end(done);
     });
 });
+
+describe('DELETE /todos/:id', () => {
+    it('Should return a 404 error when supplied with invalid ID', (done) => {
+
+        request(app)
+        .delete(`/todos/123456`)
+        .expect(404)
+        .end(done);
+    });
+
+    it('Should return a 404 error when supplied with a valid ID but todo not found', (done) => {
+
+        request(app)
+        .delete(`/todos/${new ObjectID().toHexString()}`)
+        .expect(404)
+        .end(done);
+    });
+
+    it('Should return a todo', (done) => {
+
+        request(app)
+        .delete(`/todos/${id}`)
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo).toBeTruthy();
+            expect(res.body.todo['_id']).toBe(id);
+            expect(res.body.todo['text']).toBe(todos[0].text);
+            Todo.findById(id).then((res) => {
+                expect(res).toBeFalsy();
+            }).catch((e) => done(e));
+        })
+        .end(done);
+    });
+});
+
+describe('PATCH /todos/:id', () => {
+    it('Should return a 404 error when supplied with invalid ID', (done) => {
+
+        request(app)
+        .patch(`/todos/123456`)
+        .expect(404)
+        .end(done);
+    });
+
+    it('Should return a 404 error when supplied with a valid ID but todo not found', (done) => {
+
+        request(app)
+        .patch(`/todos/${new ObjectID().toHexString()}`)
+        .expect(404)
+        .end(done);
+    });
+
+    it('Should return a todo', (done) => {
+
+        request(app)
+        .patch(`/todos/${id}`)
+        .send({
+            text: "Test text",
+            completed: true
+        })
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo).toBeTruthy();
+            expect(res.body.todo['_id']).toBe(id);
+            expect(res.body.todo['text']).toBe("Test text");
+            expect(res.body.todo['completedAt']).toBeTruthy();
+            Todo.findById(id).then((res) => {
+                expect(res).toBeTruthy();
+            }).catch((e) => done(e));
+        })
+        .end(done);
+    });
+});
