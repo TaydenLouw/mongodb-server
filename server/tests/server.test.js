@@ -9,7 +9,9 @@ var {Todo} = require('./../models/todo');
 var todos = [{
     text: "First test todo"
 }, {
-    text: "Second test todo"
+    text: "Second test todo",
+    completed: true,
+    completedAt: 123456
 }];
 
 var id = "";
@@ -166,7 +168,7 @@ describe('PATCH /todos/:id', () => {
         .end(done);
     });
 
-    it('Should return a todo', (done) => {
+    it('Should return a todo with completed set to true and have a timestamp', (done) => {
 
         request(app)
         .patch(`/todos/${id}`)
@@ -180,6 +182,28 @@ describe('PATCH /todos/:id', () => {
             expect(res.body.todo['_id']).toBe(id);
             expect(res.body.todo['text']).toBe("Test text");
             expect(res.body.todo['completedAt']).toBeTruthy();
+            Todo.findById(id).then((res) => {
+                expect(res).toBeTruthy();
+            }).catch((e) => done(e));
+        })
+        .end(done);
+    });
+
+    it('Should return a todo with completed set to false and not have a timestamp', (done) => {
+
+        request(app)
+        .patch(`/todos/${id}`)
+        .send({
+            text: "Test text",
+            completed: false
+        })
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo).toBeTruthy();
+            expect(res.body.todo['_id']).toBe(id);
+            expect(res.body.todo['text']).toBe("Test text");
+            expect(res.body.todo['completed']).toBe(false);
+            expect(res.body.todo['completedAt']).toBeFalsy();
             Todo.findById(id).then((res) => {
                 expect(res).toBeTruthy();
             }).catch((e) => done(e));
