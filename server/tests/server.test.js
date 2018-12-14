@@ -1,6 +1,7 @@
 const expect = require('expect');
 const request = require('supertest');
 
+
 var {app} = require('./../server');
 var {Todo} = require('./../models/todo');
 
@@ -10,10 +11,17 @@ var todos = [{
     text: "Second test todo"
 }];
 
+var id = "";
+
+
+
 beforeEach((done) => {
     Todo.deleteMany({}).then(() => {
-        return Todo.insertMany(todos).then()
-    }).then(() => done());
+        return Todo.insertMany(todos)
+    }).then((res) => {
+        id = res[0].id;
+        done();
+    });
     
 });
 
@@ -59,6 +67,8 @@ describe('POST /todos', () => {
     });
 });
 
+
+
 describe('GET /todos', () => {
     it('Should return all todos', (done) => {
 
@@ -67,6 +77,21 @@ describe('GET /todos', () => {
         .expect(200)
         .expect((res) => {
             expect(res.body.todos.length).toBe(2);
+        })
+        .end(done);
+    });
+});
+
+
+describe('GET /todos/:id', () => {
+    it('Should return a todo', (done) => {
+
+        request(app)
+        .get(`/todos/${id}`)
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo).toBeTruthy();
+            expect(res.body.todo['_id']).toBe(id);
         })
         .end(done);
     });
